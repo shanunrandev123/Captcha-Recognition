@@ -11,6 +11,13 @@ During training, the optimizer and learning rate scheduler are used to adjust mo
 After each epoch, the model’s predictions are decoded into human-readable text using the decode_preds customized function, and the results are evaluated against actual CAPTCHA text to monitor performance.
 
 
+##Dataset Link
+https://github.com/AakashKumarNain/CaptchaCracker/raw/master/captcha_images_v2.zip
+
+## Running commands
+
+
+
 
 
 
