@@ -1,4 +1,4 @@
-# Captcha Recognition using CNN + RNN
+# Captcha Recognition using Convolutional and Recurrent Neural Networks in Pytorch
 
 The Project aims to develop a Deep learning model to recognize and decode CAPTCHA images. It uses a Convolutional Neural Network and a Recurrent Neural Network to process and predict characters from captcha images.
 
@@ -14,7 +14,8 @@ After each epoch, the model’s predictions are decoded into human-readable text
 ##Dataset Link
 https://github.com/AakashKumarNain/CaptchaCracker/raw/master/captcha_images_v2.zip
 
-## Running commands
+## Cloning this Repository
+git clone https://github.com/shanunrandev123/Captcha-Recognition.git
 
 
 
