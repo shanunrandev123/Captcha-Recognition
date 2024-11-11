@@ -1,5 +1,17 @@
 # Captcha Recognition using CNN + RNN
 
+The Project aims to develop a Deep learning model to recognize and decode CAPTCHA images. It uses a Convolutional Neural Network and a Recurrent Neural Network to process and predict characters from captcha images.
+
+## Model Architecture
+The Captcha DL model combines CNN layers for image feature extraction and a GRU layer for sequential character prediction, outputting probabilities across character classes.
+
+## Training and Evaluation
+A custom engine module provides training and evaluation functions to train the model and compute losses.
+During training, the optimizer and learning rate scheduler are used to adjust model weights.
+After each epoch, the model’s predictions are decoded into human-readable text using the decode_preds customized function, and the results are evaluated against actual CAPTCHA text to monitor performance.
+
+
+
 
 
 
