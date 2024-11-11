@@ -10,6 +10,32 @@ from sklearn import metrics
 
 import config
 import dataset
+from model import CaptchaModel
+import engine
+from pprint import pprint
+
+
+
+def decode_preds(pred, encoder):
+    pred = pred.permute(1,0,2)
+    pred = torch.softmax(pred, 2)
+    pred = torch.argmax(pred, 2)
+    pred = pred.detach().cpu().numpy()
+
+    captcha_preds = []
+
+    for j in range(pred.shape[0]):
+        temp = []
+        for k in pred[j, :]:
+            k = k - 1
+            if k == -1:
+                temp.append("-")
+            else:
+                temp.append(encoder.inverse_transform([k])[0])
+        prediction = "".join(temp)
+        captcha_preds.append(prediction)
+
+    return captcha_preds
 
 
 def run_training():
@@ -58,6 +84,38 @@ def run_training():
         shuffle=False
     )
 
+    model = CaptchaModel(num_chars=len(label_enc.classes_))
+    model.to(config.DEVICE)
+    optimizer = torch.optim.Adam(model.parameters(), lr=3e-4)
+    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
+        optimizer,
+        patience=5,
+        factor=0.8,
+        mode="max"
+    )
+
+    for epoch in range(config.EPOCHS):
+        train_loss = engine.training_func(model, train_loader, optimizer)
+        test_preds, test_loss = engine.evaluation_func(model, test_loader)
+        test_captcha_preds = []
+        for p in test_preds:
+            current_preds = decode_preds(p, label_enc)
+            test_captcha_preds.extend(current_preds)
+        pprint(list(zip(test_orig_targets, test_captcha_preds))[6:10])
+        print(f"Epoch={epoch}, Train Loss={train_loss}, Test Loss={test_loss}")
+
+        # test_preds = np.vstack(test_preds)
+        # test_preds = np.argmax(test_preds, axis=2).T
+        # print(test_preds)
+        #
+        # accuracy = metrics.accuracy_score(test_targets.flatten(), test_preds.flatten())
+        # print(f"Accuracy={accuracy}")
+        #
+        # scheduler.step(accuracy)
+
+        # if accuracy > 0.95:
+        #     torch.save(model.state_dict(), "./model.bin")
+        #     break
 
 
 

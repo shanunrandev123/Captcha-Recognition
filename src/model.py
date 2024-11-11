@@ -18,32 +18,49 @@ class CaptchaModel(nn.Module):
 
     def forward(self, images, targets=None):
         bs, c, h, w = images.size()
-        print(bs, c, h, w)
+        # print(bs, c, h, w)
         x = F.relu(self.conv_1(images))
         x = self.avg_pool1(x)
-        print(x.size())
+        # print(x.size())
         x = F.relu(self.conv_2(x))
         x = self.avg_pool2(x)
-        print(x.size())
+        # print(x.size())
         x = x.permute(0, 3, 1, 2)
-        print(x.size())
+        # print(x.size())
         x = x.view(bs, x.size(1), -1)
-        print(x.size())
+        # print(x.size())
         x = self.linear_1(x)
         x = self.drop_1(x)
-        print(x.size())
+        # print(x.size())
         x, _ = self.gru(x)
-        print(x.size())
+        # print(x.size())
         x = self.output(x)
-        print(x.size())
+        # print(x.size())
         x = x.permute(1, 0, 2)
-        print(x.size())
+        # print(x.size())
+        # x = x.permute(1, 0, 2)
+        # print(x.size())
         if targets is not None:
+            log_softmax_values = F.log_softmax(x, 2)
+            input_lengths = torch.full(
+                size=(bs,), fill_value=log_softmax_values.size(0), dtype=torch.int32
+            )
 
-        return x
+            target_lengths = torch.full(
+                size=(bs,), fill_value=targets.size(1), dtype=torch.int32
+            )
+
+            # print(target_lengths)
+
+            loss = nn.CTCLoss(blank=0)(
+                log_softmax_values, targets, input_lengths, target_lengths
+            )
+
+            return x, loss
+        return x, None
 
 if __name__ == "__main__":
     cap_model = CaptchaModel(21)
-    img = torch.rand((1, 3, 75, 300))
-    target = torch.randint(1, 10, (1,5))
+    img = torch.rand((5, 3, 75, 300))
+    target = torch.randint(1, 10, (5,5))
     x = cap_model(img, target)
